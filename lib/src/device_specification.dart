@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class DeviceSpecification {
-  final Size size;
-  final EdgeInsets padding;
-  final EdgeInsets paddingLandscape;
-  final String name;
+  final Size? size;
+  final EdgeInsets? padding;
+  final EdgeInsets? paddingLandscape;
+  final String? name;
   final double cornerRadius;
-  final Size notchSize;
+  final Size? notchSize;
   final bool tablet;
   final double navBarHeight;
 

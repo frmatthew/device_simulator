@@ -2,9 +2,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class FakeAndroidStatusBar extends StatelessWidget {
-  final double height;
+  final double? height;
   final double horizontalPadding;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   FakeAndroidStatusBar(
       {this.height, this.horizontalPadding = 8.0, this.backgroundColor});
@@ -19,7 +19,7 @@ class FakeAndroidStatusBar extends StatelessWidget {
       color: Colors.white,
     );
 
-    double iconSize = min(height - padding * 2, 22.0);
+    double iconSize = min(height! - padding * 2, 22.0);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -57,7 +57,7 @@ class FakeAndroidStatusBar extends StatelessWidget {
 }
 
 class FakeAndroidNavBar extends StatelessWidget {
-  final double height;
+  final double? height;
   final double cornerRadius;
 
   FakeAndroidNavBar({this.height, this.cornerRadius = 0.0});

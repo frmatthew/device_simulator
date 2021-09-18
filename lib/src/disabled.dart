@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DisabledDeviceSimulator extends StatefulWidget {
-  final Widget child;
-  final TextStyle style;
+  final Widget? child;
+  final TextStyle? style;
 
   DisabledDeviceSimulator({this.child, this.style});
 
@@ -27,7 +27,7 @@ class _DisabledDeviceSimulatorState extends State<DisabledDeviceSimulator> {
         ignoring: showWarning,
         child: Stack(
           children: <Widget>[
-            widget.child,
+            widget.child!,
             if (showWarning)
               Positioned(
                 bottom: 0.0,

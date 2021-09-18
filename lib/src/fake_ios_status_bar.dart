@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class FakeIOSStatusBar extends StatelessWidget {
-  final double height;
-  final Brightness brightness;
+  final double? height;
+  final Brightness? brightness;
   final bool tablet;
   final bool roundedCorners;
   final bool notch;
@@ -79,9 +79,9 @@ class FakeIOSStatusBar extends StatelessWidget {
 }
 
 class FakeIOSMultitaskBar extends StatelessWidget {
-  final double width;
-  final bool tablet;
-  final Color color;
+  final double? width;
+  final bool? tablet;
+  final Color? color;
 
   FakeIOSMultitaskBar({this.width, this.tablet, this.color});
 
@@ -92,7 +92,7 @@ class FakeIOSMultitaskBar extends StatelessWidget {
       child: Center(
         child: Container(
           width: width,
-          height: tablet ? 5.0 : 4.0,
+          height: tablet! ? 5.0 : 4.0,
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.all(Radius.circular(4.0)),

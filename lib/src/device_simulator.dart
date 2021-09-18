@@ -1,8 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
-import 'package:custom_navigator/custom_navigator.dart';
-
 import 'device_spec_list.dart';
 import 'disabled.dart';
 import 'fake_android_status_bar.dart';
@@ -10,8 +8,8 @@ import 'fake_ios_status_bar.dart';
 import 'apple_icon.dart';
 
 const double _kSettingsHeight = 72.0;
-final Color _kBackgroundColor = Colors.grey[900];
-final Color _kDividerColor = Colors.grey[700];
+final Color? _kBackgroundColor = Colors.grey[900];
+final Color? _kDividerColor = Colors.grey[700];
 final _kTextStyle = TextStyle(
   color: Colors.white,
   fontFamily: '.SF UI Text',
@@ -53,7 +51,7 @@ class DeviceSimulator extends StatefulWidget {
 
   /// Creates a new [DeviceSimulator].
   DeviceSimulator(
-      {@required this.child,
+      {required this.child,
       this.enable = true,
       this.brightness = Brightness.light,
       this.iOSMultitaskBarColor = Colors.grey,
@@ -90,9 +88,9 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
     var specs = _platform == TargetPlatform.iOS ? iosSpecs : androidSpecs;
     var spec = specs[_currentDevice];
 
-    Size simulatedSize = spec.size;
+    Size? simulatedSize = spec.size;
     if (mq.orientation == Orientation.landscape)
-      simulatedSize = simulatedSize.flipped;
+      simulatedSize = simulatedSize!.flipped;
 
     double navBarHeight = 0.0;
     if (_platform == TargetPlatform.android && widget.androidShowNavigationBar)
@@ -101,7 +99,7 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
     bool overflowWidth = false;
     bool overflowHeight = false;
 
-    if (simulatedSize.width > mq.size.width) {
+    if (simulatedSize!.width > mq.size.width) {
       simulatedSize = Size(mq.size.width, simulatedSize.height);
       overflowWidth = true;
     }
@@ -115,7 +113,7 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
 
     double cornerRadius = _screenshotMode ? 0.0 : spec.cornerRadius;
 
-    EdgeInsets padding = spec.padding;
+    EdgeInsets? padding = spec.padding;
     if (mq.orientation == Orientation.landscape &&
         spec.paddingLandscape != null) padding = spec.paddingLandscape;
 
@@ -127,11 +125,7 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
       ),
       child: Theme(
         data: theme.copyWith(platform: _platform),
-        child: CustomNavigator(
-          navigatorKey: _navigatorKey,
-          home: widget.child,
-          pageRoute: PageRoutes.materialPageRoute,
-        ),
+        child: widget.child,
       ),
     );
 
@@ -182,7 +176,7 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
     Widget fakeStatusBar = Positioned(
       left: 0.0,
       right: 0.0,
-      height: padding.top,
+      height: padding!.top,
       child: _platform == TargetPlatform.iOS
           ? FakeIOSStatusBar(
               brightness: widget.brightness,
@@ -200,7 +194,7 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
       left: 0.0,
       right: 0.0,
       bottom: 0.0,
-      height: spec.padding.bottom,
+      height: spec.padding!.bottom,
       child: FakeIOSMultitaskBar(
         width: simulatedSize.width / 3.0,
         color: widget.iOSMultitaskBarColor,
@@ -336,7 +330,7 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
                         Padding(
                           padding: EdgeInsets.only(top: 4.0),
                           child: Text(
-                            specs[_currentDevice].name,
+                            specs[_currentDevice].name!,
                             style: _kTextStyle.copyWith(
                                 color: Colors.white54, fontSize: 10.0),
                             maxLines: 1,
