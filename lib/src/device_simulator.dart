@@ -1,11 +1,25 @@
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
+
+import 'apple_icon.dart';
 import 'device_spec_list.dart';
+import 'device_specification.dart';
 import 'disabled.dart';
 import 'fake_android_status_bar.dart';
 import 'fake_ios_status_bar.dart';
-import 'apple_icon.dart';
+
+extension IntExtensions on int {
+  ///returns a String with leading zeros.
+  ///1 would be with the [numberOfTotalDigits] = 3 lead to a string '001'
+  String addLeadingZeros(int numberOfTotalDigits) =>
+      toString().padLeft(numberOfTotalDigits, '0');
+}
 
 const double _kSettingsHeight = 72.0;
 final Color? _kBackgroundColor = Colors.grey[900];
@@ -63,12 +77,48 @@ class DeviceSimulator extends StatefulWidget {
 
 class _DeviceSimulatorState extends State<DeviceSimulator> {
   Key _contentKey = UniqueKey();
-  Key _navigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey _screenshotKey = new GlobalKey();
+
+  int screenshotCount = 0;
 
   @override
   void initState() {
     super.initState();
-    if (widget.enable) SystemChrome.setEnabledSystemUIOverlays([]);
+    if (widget.enable) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+    }
+  }
+
+  Future<void> _saveScreenshot(DeviceSpecification spec) async {
+    RenderRepaintBoundary? boundary = _screenshotKey.currentContext
+        ?.findRenderObject() as RenderRepaintBoundary?;
+
+    if (boundary == null) {
+      // fixme: report error
+      return;
+    }
+
+    final image = await boundary.toImage(pixelRatio: spec.scaleFactor);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+
+    if (byteData == null) {
+      // fixme: report error
+      return;
+    }
+
+    final resizedImg = img.decodePng(byteData.buffer.asUint8List())!;
+    // img.copyResize(
+    //   img.decodePng(byteData.buffer.asUint8List())!,
+    //   width: (spec.size?.width.toInt() ?? image.width) * 2,
+    //   height: (spec.size?.height.toInt() ?? image.height) * 2,
+    // );
+
+    final directory = (await getTemporaryDirectory()).path;
+    File imgFile = new File(
+        '$directory/screenshot - ${spec.name} - ${screenshotCount.addLeadingZeros(4)}.png');
+    screenshotCount++;
+
+    await imgFile.writeAsBytes(img.encodePng(resizedImg));
   }
 
   @override
@@ -213,19 +263,22 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
       ),
     );
 
-    clippedContent = Stack(
-      children: <Widget>[
-        clippedContent,
-        notch,
-        fakeStatusBar,
-        if (_platform == TargetPlatform.iOS &&
-            spec.cornerRadius > 0.0 &&
-            mq.size != simulatedSize)
-          fakeMultitaskBar,
-        if (widget.androidShowNavigationBar &&
-            _platform == TargetPlatform.android)
-          fakeNavigationBar,
-      ],
+    clippedContent = RepaintBoundary(
+      key: _screenshotKey,
+      child: Stack(
+        children: <Widget>[
+          clippedContent,
+          notch,
+          fakeStatusBar,
+          if (_platform == TargetPlatform.iOS &&
+              spec.cornerRadius > 0.0 &&
+              mq.size != simulatedSize)
+            fakeMultitaskBar,
+          if (widget.androidShowNavigationBar &&
+              _platform == TargetPlatform.android)
+            fakeNavigationBar,
+        ],
+      ),
     );
 
     var screen = Material(
@@ -293,7 +346,8 @@ class _DeviceSimulatorState extends State<DeviceSimulator> {
                     color: Colors.white,
                     onPressed: () {
                       setState(() {
-                        _screenshotMode = true;
+                        // _screenshotMode = true;
+                        _saveScreenshot(spec);
                       });
                     },
                   ),

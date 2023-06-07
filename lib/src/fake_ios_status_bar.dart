@@ -53,7 +53,7 @@ class FakeIOSStatusBar extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(left: leftPadding, top: notch ? 2.0 : 2.0),
             child: Text(
-              notch ? '1:37 PM' : '1:37 PM   Mon May 4',
+              notch ? '1:37 PM' : '1:37 PM   Mon Jan 10',
               style: style,
             ),
           ),
